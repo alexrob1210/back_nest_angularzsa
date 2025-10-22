@@ -1,27 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { parse } from 'dotenv';
+import * as path from 'path';
+
+@Injectable()
 export class ConfigService {
   private readonly envConfig: { [key: string]: string };
 
   constructor() {
-    const isDevelopmentEnv = process.env.NODE_ENV !== 'production';
-    if (isDevelopmentEnv) {
-      const envFilePath = __dirname + '/../../.env.development';
-      const existsPath = fs.existsSync(envFilePath);
-      if (!existsPath) {
-        console.log('.env.develoment no existe DEVELOPMENT');
-      }
-      this.envConfig = parse(fs.readFileSync(envFilePath));
-    } else {
-      const envFilePath = __dirname + '/../../.env.production';
-      const existsPath = fs.existsSync(envFilePath);
-      if (!existsPath) {
-        console.log('.env.develoment no existe PRODUCTION');
-      }
-      this.envConfig = parse(fs.readFileSync(envFilePath));
+    const env = process.env.NODE_ENV || 'development';
+    const envFilePath = path.resolve(__dirname, `../../../.env.${env}`);
+
+    if (!fs.existsSync(envFilePath)) {
+      console.error(`${envFilePath} no existe`);
+      process.exit(1);
     }
+
+    this.envConfig = parse(fs.readFileSync(envFilePath));
   }
+
   get(key: string): string {
     return this.envConfig[key];
   }
