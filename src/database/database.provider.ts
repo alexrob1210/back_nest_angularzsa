@@ -11,11 +11,12 @@ export const databaseProvider = [
     useFactory: (config: ConfigService) => {
       const dataSource = new DataSource({
         type: 'postgres',
-        host: config.get('HOST')||'localhost',
+        host: config.get('HOST') || 'localhost',
         port: +config.get('PORT'),
-        username: config.get('USERNAME')|| 'root',
-        password: config.get('PASSWORD')|| 'prueba',
+        username: config.get('USERNAME') || 'root',
+        password: config.get('PASSWORD') || 'prueba',
         database: config.get('DATABASE'),
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       });
       return dataSource.initialize();
     },
